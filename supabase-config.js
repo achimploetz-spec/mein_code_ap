@@ -1,6 +1,6 @@
-// Public browser configuration. These values are safe to expose when Row Level Security is enabled.
-// Paste the Project URL and publishable key from Supabase: Project Settings → API Keys.
+// Public browser configuration. Publishable keys are designed to be public.
+// Row Level Security (RLS) protects the data; never put a secret/service-role key here.
 window.SUPABASE_CONFIG = {
-  url: "https://YOUR_PROJECT_REF.supabase.co",
-  publishableKey: "sb_publishable_REPLACE_ME"
+  url: "https://psdqjuejmvlnebcrwsyj.supabase.co",
+  publishableKey: "sb_publishable_EJvgrMPytoVPILcXNanONA_uaw6CYbF"
 };
