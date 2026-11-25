@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111e">
+  <meta name="description" content="Private Datenerfassung mit Anmeldung.">
+  <title>Meine Daten – Auto & Zukunft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:dark;--ink:#f5f7fb;--muted:#a9b6c8;--bg:#07111e;--panel:#101d2c;--line:#26364a;--blue:#64b5ff;--mint:#81e6cb;--red:#ff9388}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "DM Sans",sans-serif}a{color:inherit}.wrap{width:min(960px,calc(100% - 32px));margin:auto}
+    header{border-bottom:1px solid var(--line)}nav{height:72px;display:flex;align-items:center;justify-content:space-between}.brand{font:800 14px Manrope,sans-serif;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}.back{color:var(--blue);text-decoration:none;font-size:14px}
+    main{padding:56px 0 80px}.eyebrow{color:var(--mint);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}h1,h2,h3{font-family:Manrope,sans-serif;line-height:1.15;letter-spacing:-.025em}h1{font-size:clamp(34px,6vw,54px);margin:10px 0}h2{font-size:25px;margin:0 0 18px}p{color:var(--muted)}.intro{max-width:640px;margin:0 0 30px}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;margin:18px 0}.narrow{max-width:490px}.hidden{display:none!important}
+    label{display:block;margin:15px 0 6px;font-size:14px;font-weight:600}input,textarea,select{width:100%;border:1px solid #394b61;border-radius:9px;background:#091421;color:var(--ink);padding:12px 13px;font:inherit}input:focus,textarea:focus,select:focus{outline:2px solid var(--blue);outline-offset:1px}textarea{min-height:112px;resize:vertical}
+    button{border:0;border-radius:9px;background:var(--mint);color:#07111e;padding:11px 16px;font:700 14px "DM Sans",sans-serif;cursor:pointer}button.secondary{background:#ffffff12;color:var(--ink);border:1px solid #ffffff32}button.danger{background:transparent;color:var(--red);border:1px solid #ff938855;padding:8px 11px}button:disabled{opacity:.6;cursor:wait}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}.status{min-height:24px;margin:12px 0 0;color:var(--muted);font-size:14px}.status.error{color:var(--red)}.userbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.userbar p{margin:0}
+    .entry-list{display:grid;gap:12px}.entry{padding:18px;border:1px solid var(--line);border-radius:12px;background:#0b1725}.entry-head{display:flex;justify-content:space-between;gap:12px;align-items:start}.entry h3{font-size:19px;margin:0}.meta{font-size:12px;color:var(--mint);margin:4px 0 8px}.entry p{white-space:pre-wrap;margin:0}.empty{padding:20px;border:1px dashed #394b61;border-radius:12px;color:var(--muted);text-align:center}.small{font-size:12px;color:var(--muted)}
+    footer{border-top:1px solid var(--line);padding:22px 0 34px;color:var(--muted);font-size:13px}
+    @media(max-width:560px){.row{grid-template-columns:1fr}main{padding-top:38px}.panel{padding:20px}.entry-head{align-items:flex-start}}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header><nav class="wrap" aria-label="Hauptnavigation"><a class="brand" href="index.html">Auto & Zukunft</a><a class="back" href="index.html">← Zur Website</a></nav></header>
+  <main class="wrap">
+    <div class="eyebrow">Privater Bereich</div>
+    <h1>Meine Daten</h1>
+    <p class="intro">Melde dich an, um deine Einträge zu speichern und wieder aufzurufen. Es gibt in der App keine öffentliche Registrierung.</p>
+
+    <section id="login-panel" class="panel narrow" aria-labelledby="login-title">
+      <h2 id="login-title">Anmelden</h2>
+      <form id="login-form">
+        <label for="email">E-Mail</label>
+        <input id="email" name="email" type="email" autocomplete="username" required>
+        <label for="password">Passwort</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <div class="actions"><button id="login-button" type="submit">Anmelden</button></div>
+      </form>
+      <p id="login-status" class="status" role="status" aria-live="polite">Zum Anmelden brauchst du ein Benutzerkonto, das im Supabase-Dashboard angelegt wurde.</p>
+    </section>
+
+    <section id="data-panel" class="hidden" aria-labelledby="entry-title">
+      <div class="panel userbar">
+        <p>Angemeldet als <strong id="signed-in-email"></strong></p>
+        <button id="logout-button" class="secondary" type="button">Abmelden</button>
+      </div>
+      <div class="panel">
+        <h2 id="entry-title">Eintrag hinzufügen</h2>
+        <form id="entry-form">
+          <label for="entry-title-input">Titel</label>
+          <input id="entry-title-input" name="title" maxlength="180" required>
+          <div class="row">
+            <div><label for="category">Kategorie</label><input id="category" name="category" maxlength="80" value="Allgemein"></div>
+            <div><label for="entry-date">Datum</label><input id="entry-date" name="entry_date" type="date" required></div>
+          </div>
+          <label for="notes">Notizen</label>
+          <textarea id="notes" name="notes" maxlength="10000" placeholder="Deine Notizen …"></textarea>
+          <div class="actions"><button id="save-button" type="submit">Eintrag speichern</button></div>
+          <p id="save-status" class="status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+      <div class="panel">
+        <h2>Gespeicherte Einträge</h2>
+        <div id="entry-list" class="entry-list"><div class="empty">Lade Einträge …</div></div>
+        <p id="list-status" class="status" role="status" aria-live="polite"></p>
+      </div>
+      <p class="small">Deine Einträge sind an dein Supabase-Konto gebunden. Die Datenbank-Regeln erlauben jedem Konto nur den Zugriff auf seine eigenen Einträge.</p>
+    </section>
+  </main>
+  <footer><div class="wrap">Deine Einträge werden in deiner Supabase-Datenbank gespeichert.</div></footer>
+</body>
+</html>
