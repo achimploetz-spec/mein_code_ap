@@ -32,4 +32,4 @@ Die Datei [app.html](app.html) enthält eine Anmeldemaske und eine einfache Eint
 5. Trage die Werte in [supabase-config.js](supabase-config.js) ein. Die Datei ist im öffentlichen Repo sichtbar: Das ist für den Publishable key vorgesehen, **wenn** Row Level Security aktiv ist. Niemals einen Secret- oder `service_role`-Key hier eintragen.
 6. Rufe nach der Veröffentlichung `https://ap-benutzer.github.io/github_repo_ap/app.html` auf und melde dich mit dem angelegten Benutzer an.
 
-Die Tabelle hat Row Level Security. Lese-, Schreib-, Änderungs- und Löschregeln erlauben nur Einträge, deren `user_id` zur angemeldeten Supabase-Identität gehört. Die Anmeldesitzung wird durch Supabase Auth verwaltet.
+Die Tabelle `\"Buchungen\".\"Bestand\"` hat Row Level Security (RLS). Lese-, Schreib- und Löschregeln erlauben nur Datensätze, deren `user_id` zur angemeldeten Supabase-Identität gehört. Der Gesamtbetrag wird automatisch aus Menge × Einzelpreis berechnet. Die App greift über das Schema `Buchungen` auf die Data API zu; dieses Schema muss in Supabase unter **Project Settings → API → Exposed schemas** hinzugefügt sein. Die Anmeldesitzung wird durch Supabase Auth verwaltet.
