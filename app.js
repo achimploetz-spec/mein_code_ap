@@ -24,11 +24,12 @@
 
   if (!configured || !window.supabase?.createClient) {
     loginButton.disabled = true;
-    loginStatus.textContent = "Die App ist vorbereitet. Richte zuerst das Supabase-Projekt ein und trage URL sowie Publishable Key in supabase-config.js ein.";
+    loginStatus.textContent = "Die App ist vorbereitet. Trage zuerst Project URL und Publishable Key in supabase-config.js ein.";
     return;
   }
 
   const client = window.supabase.createClient(config.url, config.publishableKey);
+  const bestand = () => client.schema("Buchungen").from("Bestand");
 
   function setStatus(element, message, isError = false) {
     element.textContent = message;
@@ -56,15 +57,22 @@
   function addText(parent, tag, className, value) {
     const node = document.createElement(tag);
     if (className) node.className = className;
-    node.textContent = value || "";
+    node.textContent = value ?? "";
     parent.append(node);
     return node;
+  }
+
+  function formatMoney(value, currency = "EUR") {
+    return new Intl.NumberFormat("de-DE", {
+      style: "currency",
+      currency: String(currency).trim() || "EUR"
+    }).format(Number(value));
   }
 
   function renderEntries(rows) {
     entryList.replaceChildren();
     if (!rows.length) {
-      addText(entryList, "div", "empty", "Noch keine Einträge gespeichert.");
+      addText(entryList, "div", "empty", "Noch keine Buchungen im Bestand.");
       return;
     }
 
@@ -74,35 +82,37 @@
       const head = document.createElement("div");
       head.className = "entry-head";
       const copy = document.createElement("div");
-      addText(copy, "h3", "", row.title);
-      const date = row.entry_date
-        ? new Date(row.entry_date + "T12:00:00").toLocaleDateString("de-DE")
+      addText(copy, "h3", "", row.bezeichnung);
+      const date = row.buchungsdatum
+        ? new Date(row.buchungsdatum + "T12:00:00").toLocaleDateString("de-DE")
         : "";
-      addText(copy, "div", "meta", [row.category, date].filter(Boolean).join(" · "));
+      addText(copy, "div", "meta", [row.kategorie, date].filter(Boolean).join(" · "));
       head.append(copy);
+
       const remove = document.createElement("button");
       remove.type = "button";
       remove.className = "danger";
       remove.textContent = "Löschen";
-      remove.setAttribute("aria-label", "Eintrag löschen: " + row.title);
+      remove.setAttribute("aria-label", "Buchung löschen: " + row.bezeichnung);
       remove.addEventListener("click", () => deleteEntry(row.id, remove));
       head.append(remove);
       card.append(head);
-      if (row.notes) addText(card, "p", "", row.notes);
+
+      const amount = Number(row.menge).toLocaleString("de-DE", { maximumFractionDigits: 3 });
+      addText(card, "p", "", `${amount} × ${formatMoney(row.einzelpreis, row.waehrung)} = ${formatMoney(row.gesamtbetrag, row.waehrung)}`);
       entryList.append(card);
     }
   }
 
   async function loadEntries() {
-    setStatus(listStatus, "Lade Einträge …");
-    const { data, error } = await client
-      .from("private_entries")
-      .select("id,title,category,entry_date,notes")
-      .order("entry_date", { ascending: false })
-      .order("created_at", { ascending: false });
+    setStatus(listStatus, "Lade Bestand …");
+    const { data, error } = await bestand()
+      .select("id,bezeichnung,kategorie,buchungsdatum,menge,einzelpreis,gesamtbetrag,waehrung,erstellt_am")
+      .order("buchungsdatum", { ascending: false })
+      .order("erstellt_am", { ascending: false });
 
     if (error) {
-      setStatus(listStatus, "Einträge konnten nicht geladen werden: " + error.message, true);
+      setStatus(listStatus, "Bestand konnte nicht geladen werden: " + error.message, true);
       entryList.replaceChildren();
       return;
     }
@@ -111,15 +121,15 @@
   }
 
   async function deleteEntry(id, button) {
-    if (!window.confirm("Diesen Eintrag wirklich löschen?")) return;
+    if (!window.confirm("Diese Buchung wirklich löschen?")) return;
     button.disabled = true;
-    const { error } = await client.from("private_entries").delete().eq("id", id);
+    const { error } = await bestand().delete().eq("id", id);
     if (error) {
-      setStatus(listStatus, "Eintrag konnte nicht gelöscht werden: " + error.message, true);
+      setStatus(listStatus, "Buchung konnte nicht gelöscht werden: " + error.message, true);
       button.disabled = false;
       return;
     }
-    setStatus(listStatus, "Eintrag gelöscht.");
+    setStatus(listStatus, "Buchung gelöscht.");
     await loadEntries();
   }
 
@@ -145,23 +155,17 @@
   entryForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     setStatus(saveStatus, "");
-    setBusy(saveButton, true, "Speichert …", "Eintrag speichern");
+    setBusy(saveButton, true, "Speichert …", "Buchung speichern");
     const form = new FormData(entryForm);
-    const { data: { user } } = await client.auth.getUser();
-    if (!user) {
-      setBusy(saveButton, false, "", "Eintrag speichern");
-      showSignedOut("Bitte melde dich erneut an.");
-      return;
-    }
-
-    const { error } = await client.from("private_entries").insert({
-      user_id: user.id,
-      title: String(form.get("title")).trim(),
-      category: String(form.get("category")).trim() || "Allgemein",
-      entry_date: String(form.get("entry_date")),
-      notes: String(form.get("notes")).trim()
+    const { error } = await bestand().insert({
+      bezeichnung: String(form.get("title")).trim(),
+      kategorie: String(form.get("category")).trim() || "Allgemein",
+      buchungsdatum: String(form.get("entry_date")),
+      menge: Number(form.get("quantity")),
+      einzelpreis: Number(form.get("unit_price")),
+      waehrung: "EUR"
     });
-    setBusy(saveButton, false, "", "Eintrag speichern");
+    setBusy(saveButton, false, "", "Buchung speichern");
     if (error) {
       setStatus(saveStatus, "Speichern fehlgeschlagen: " + error.message, true);
       return;
@@ -170,7 +174,8 @@
     entryForm.reset();
     dateInput.value = new Date().toISOString().slice(0, 10);
     document.getElementById("category").value = "Allgemein";
-    setStatus(saveStatus, "Eintrag gespeichert.");
+    document.getElementById("quantity").value = "1";
+    setStatus(saveStatus, "Buchung gespeichert.");
     await loadEntries();
   });
 
