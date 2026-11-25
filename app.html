@@ -31,7 +31,7 @@
   <main class="wrap">
     <div class="eyebrow">Privater Bereich</div>
     <h1>Meine Daten</h1>
-    <p class="intro">Melde dich an, um deine Einträge zu speichern und wieder aufzurufen. Es gibt in der App keine öffentliche Registrierung.</p>
+    <p class="intro">Melde dich an, um deine Buchungen zu speichern und wieder aufzurufen. Es gibt in der App keine öffentliche Registrierung.</p>
 
     <section id="login-panel" class="panel narrow" aria-labelledby="login-title">
       <h2 id="login-title">Anmelden</h2>
@@ -51,28 +51,30 @@
         <button id="logout-button" class="secondary" type="button">Abmelden</button>
       </div>
       <div class="panel">
-        <h2 id="entry-title">Eintrag hinzufügen</h2>
+        <h2 id="entry-title">Buchung hinzufügen</h2>
         <form id="entry-form">
-          <label for="entry-title-input">Titel</label>
+          <label for="entry-title-input">Bezeichnung</label>
           <input id="entry-title-input" name="title" maxlength="180" required>
           <div class="row">
             <div><label for="category">Kategorie</label><input id="category" name="category" maxlength="80" value="Allgemein"></div>
-            <div><label for="entry-date">Datum</label><input id="entry-date" name="entry_date" type="date" required></div>
+            <div><label for="entry-date">Buchungsdatum</label><input id="entry-date" name="entry_date" type="date" required></div>
           </div>
-          <label for="notes">Notizen</label>
-          <textarea id="notes" name="notes" maxlength="10000" placeholder="Deine Notizen …"></textarea>
-          <div class="actions"><button id="save-button" type="submit">Eintrag speichern</button></div>
+          <div class="row">
+            <div><label for="quantity">Menge</label><input id="quantity" name="quantity" type="number" min="0.001" step="0.001" value="1" required></div>
+            <div><label for="unit-price">Einzelpreis (€)</label><input id="unit-price" name="unit_price" type="number" min="0" step="0.01" required></div>
+          </div>
+          <div class="actions"><button id="save-button" type="submit">Buchung speichern</button></div>
           <p id="save-status" class="status" role="status" aria-live="polite"></p>
         </form>
       </div>
       <div class="panel">
-        <h2>Gespeicherte Einträge</h2>
+        <h2>Gespeicherter Bestand</h2>
         <div id="entry-list" class="entry-list"><div class="empty">Lade Einträge …</div></div>
         <p id="list-status" class="status" role="status" aria-live="polite"></p>
       </div>
-      <p class="small">Deine Einträge sind an dein Supabase-Konto gebunden. Die Datenbank-Regeln erlauben jedem Konto nur den Zugriff auf seine eigenen Einträge.</p>
+      <p class="small">Deine Buchungen sind an dein Supabase-Konto gebunden. Die Datenbank-Regeln erlauben jedem Konto nur den Zugriff auf seine eigenen Datensätze.</p>
     </section>
   </main>
-  <footer><div class="wrap">Deine Einträge werden in deiner Supabase-Datenbank gespeichert.</div></footer>
+  <footer><div class="wrap">Deine Buchungen werden in deiner Supabase-Datenbank gespeichert.</div></footer>
 </body>
 </html>
