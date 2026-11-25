@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111e">
+  <meta name="description" content="Wie selbstfahrende Autos funktionieren, wie weit die Technik ist und was Tesla derzeit in den USA und Deutschland anbietet.">
+  <title>Selbstfahrende Autos – Technik, Alltag & Tesla</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#f5f7fb;--muted:#a9b6c8;--bg:#07111e;--panel:#101d2c;--line:#26364a;--blue:#64b5ff;--mint:#81e6cb;--warm:#ffd27a;--max:1120px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "DM Sans",sans-serif}
+    a{color:inherit}img{display:block;max-width:100%}.wrap{width:min(var(--max),calc(100% - 40px));margin:auto}
+    .top{position:absolute;inset:0 0 auto;z-index:2}.nav{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ffffff24}
+    .brand{font:800 14px Manrope,sans-serif;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;display:flex;gap:11px;align-items:center}.brand-mark{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--mint));display:grid;place-items:center;color:#07111e;font-weight:900}
+    .navlinks{display:flex;gap:26px;font-size:14px;color:#d2dce8}.navlinks a{text-decoration:none}.navlinks a:hover{color:var(--mint)}
+    .hero{min-height:700px;display:grid;align-items:center;position:relative;overflow:hidden;background:linear-gradient(90deg,#07111ef5 4%,#07111edb 44%,#07111e40 100%),url("https://images.unsplash.com/photo-1764983253036-edd0f55af679?auto=format&fit=crop&w=2200&q=85") center 44%/cover}
+    .hero:after{content:"";position:absolute;inset:auto 0 0;height:180px;background:linear-gradient(transparent,var(--bg))}
+    .hero-content{position:relative;z-index:1;padding:142px 0 115px;max-width:690px}
+    .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mint);font-weight:700}
+    h1,h2,h3{font-family:Manrope,sans-serif;line-height:1.12;letter-spacing:-.035em}h1{font-size:clamp(42px,7vw,78px);margin:18px 0 22px}h1 span{color:var(--blue)}
+    .lead{font-size:19px;color:#d3ddea;max-width:620px}.actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:30px}.button{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:9px;text-decoration:none;font-weight:700;font-size:14px;background:var(--mint);color:#06131d}.button.secondary{background:#ffffff10;color:var(--ink);border:1px solid #ffffff35}
+    .hero-note{font-size:12px;color:#d1dae6;margin-top:18px}.hero-note a{color:var(--blue)}
+    main section{padding:84px 0}.section-head{max-width:690px;margin-bottom:35px}.section-head h2{font-size:clamp(30px,4vw,47px);margin:10px 0 14px}.section-head p{color:var(--muted);margin:0}
+    .grid{display:grid;gap:18px}.three{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:repeat(2,1fr)}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}.card-pad{padding:24px}.card h3{margin:8px 0 10px;font-size:22px}.card p{color:var(--muted);margin:0}.tag{display:inline-flex;padding:5px 10px;border-radius:50px;background:#64b5ff18;color:var(--blue);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .level{font:800 38px Manrope,sans-serif;color:var(--mint);margin:10px 0 4px}.level-sub{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .note{margin-top:20px;border-left:3px solid var(--warm);padding:14px 18px;background:#ffd27a12;color:#e8dfca;border-radius:0 10px 10px 0}
+    .status{display:flex;align-items:center;gap:9px;font-size:12px;text-transform:uppercase;letter-spacing:.09em;font-weight:700;color:var(--mint)}.dot{width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 14px currentColor}
+    .status-card{padding:28px}.status-card.us{background:linear-gradient(145deg,#10283a,#101d2c 62%)}.status-card.de{background:linear-gradient(145deg,#25241d,#101d2c 62%)}.status-card.de .status{color:var(--warm)}
+    .status-card h3{font-size:29px;margin:18px 0 12px}.status-card ul{padding-left:20px;color:#c0ccdb}.status-card li{padding:5px 0}.mini{font-size:13px;color:var(--muted);margin-top:18px}
+    .photo{width:100%;height:265px;object-fit:cover}.caption{font-size:12px;color:var(--muted);padding:0 24px 20px}.caption a{color:var(--blue)}
+    .steps{counter-reset:step}.step{position:relative;padding:23px 22px 23px 76px}.step:before{counter-increment:step;content:"0" counter(step);position:absolute;left:23px;top:23px;color:var(--mint);font:800 20px Manrope}
+    .sources{display:grid;gap:10px}.source{padding:16px 18px;border:1px solid var(--line);border-radius:10px;background:#0b1725;color:var(--muted);font-size:14px}.source a{color:var(--blue);font-weight:700;text-decoration:none}.source a:hover{text-decoration:underline}
+    footer{border-top:1px solid var(--line);padding:28px 0 42px;color:var(--muted);font-size:13px}.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    @media(max-width:800px){.three{grid-template-columns:1fr}.two{grid-template-columns:1fr}.hero{min-height:640px;background-position:58% center}.hero-content{padding-top:130px}.navlinks{gap:14px;font-size:12px}.photo{height:240px}}
+    @media(max-width:520px){.wrap{width:min(var(--max),calc(100% - 28px))}.nav{height:68px}.navlinks a:nth-child(2){display:none}.hero{min-height:620px}main section{padding:64px 0}.lead{font-size:17px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <nav class="nav wrap" aria-label="Hauptnavigation">
+      <a class="brand" href="#start"><span class="brand-mark">A</span> Auto & Zukunft</a>
+      <div class="navlinks"><a href="#technik">Technik</a><a href="#tesla">Tesla heute</a><a href="#quellen">Quellen</a></div>
+    </nav>
+  </header>
+
+  <section class="hero" id="start">
+    <div class="wrap">
+      <div class="hero-content">
+        <div class="eyebrow">Mobilität im Wandel · Stand 25. November 2026</div>
+        <h1>Wer fährt morgen?<br><span>Das Auto – oder wir?</span></h1>
+        <p class="lead">Kameras, Sensoren und Software übernehmen immer mehr Fahraufgaben. Doch zwischen cleverer Assistenz und einem Auto, das wirklich allein fährt, liegt ein entscheidender Unterschied.</p>
+        <div class="actions"><a class="button" href="#technik">Technik verstehen ↓</a><a class="button secondary" href="#tesla">Tesla in USA & Deutschland</a></div>
+        <p class="hero-note">Bild: <a href="https://unsplash.com/photos/self-driving-car-with-sensors-on-city-street-rT3fpi94lnw" target="_blank" rel="noreferrer">Leo_Visions / Unsplash</a></p>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section id="technik">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">01 / Die Grundlagen</div><h2>Was heißt „selbstfahrend“ eigentlich?</h2><p>Fahrzeuge werden nach dem Anteil der Fahraufgabe eingestuft, den das System übernimmt – und danach, wie aufmerksam der Mensch bleiben muss.</p></div>
+        <div class="grid three">
+          <article class="card card-pad"><span class="tag">Heute weit verbreitet</span><div class="level">Level 1</div><div class="level-sub">Einzelne Aufgabe</div><h3>Das Auto unterstützt</h3><p>Zum Beispiel hält es Abstand oder hilft beim Lenken. Die Fahrerin oder der Fahrer überwacht den Verkehr und bleibt für das Fahren verantwortlich.</p></article>
+          <article class="card card-pad"><span class="tag">Teslas FSD im US-Markt</span><div class="level">Level 2</div><div class="level-sub">Lenken + Tempo</div><h3>Das Auto assistiert</h3><p>Das System kann gleichzeitig lenken sowie beschleunigen und bremsen. Der Mensch muss die Straße ununterbrochen beobachten und jederzeit übernehmen können.</p></article>
+          <article class="card card-pad"><span class="tag">Noch nicht überall Alltag</span><div class="level">Level 3+</div><div class="level-sub">System fährt bedingt</div><h3>Mehr Verantwortung beim System</h3><p>Ab Level 3 übernimmt das System unter bestimmten Bedingungen die Fahraufgabe. Ab Level 4 kann es in einem festgelegten Einsatzbereich ohne menschliche Überwachung fahren.</p></article>
+        </div>
+        <div class="note"><strong>Wichtig:</strong> „Full Self-Driving“ ist Teslas Produktname. Die überwachte Version macht das Fahrzeug laut Tesla nicht autonom. Bei Level 2 bleibt der Mensch verantwortlich und muss aufmerksam sein. <a href="https://www.nhtsa.gov/vehicle-safety/automated-vehicle-safety" target="_blank" rel="noreferrer">NHTSA: Automatisierungsstufen</a></div>
+      </div>
+    </section>
+
+    <section id="tesla" style="background:#0a1624">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">02 / Der aktuelle Stand</div><h2>Tesla: zwei Märkte, zwei Situationen</h2><p>Funktionen und Freigaben unterscheiden sich nach Land. Die folgenden Angaben beruhen auf Teslas Support-Seiten und dem deutschen Verkehrsministerium.</p></div>
+        <div class="grid two">
+          <article class="card status-card us">
+            <div class="status"><span class="dot"></span> Verfügbar für berechtigte Fahrzeuge</div>
+            <h3>USA</h3>
+            <p>Tesla bietet <strong>Full Self-Driving (Supervised)</strong> als überwachte Fahrerassistenz an. Es kann unter anderem lenken, die Route verfolgen, abbiegen und Spurwechsel ausführen.</p>
+            <ul><li>Der Fahrer muss aufmerksam bleiben und jederzeit übernehmen.</li><li>Tesla beschreibt die Funktion selbst ausdrücklich als nicht autonom.</li><li>Das US-Supportangebot nennt ein Monatsabo von 99 US-Dollar; Preis und Verfügbarkeit können sich ändern.</li></ul>
+            <p class="mini">Ein System, das viele Fahraufgaben übernimmt, ist nicht automatisch ein fahrerloses Auto.</p>
+          </article>
+          <article class="card status-card de">
+            <div class="status"><span class="dot"></span> Überwachte Vollversion noch nicht freigegeben</div>
+            <h3>Deutschland</h3>
+            <p>Teslas deutsche Support-Seite führt derzeit <strong>Tesla Assisted Driving Basic</strong> für berechtigte Fahrzeuge in Europa auf. Deutschland steht nicht auf Teslas Liste der Märkte, in denen die umfangreichere Funktion „Tesla Assisted Driving“ verfügbar ist.</p>
+            <ul><li>Das Basispaket ist von der überwachten Vollversion zu unterscheiden.</li><li>Das Bundesverkehrsministerium sagt, das europäische Anerkennungsverfahren laufe weiter.</li><li>Der Mensch bleibt für die sichere Fahrzeugführung verantwortlich.</li></ul>
+            <p class="mini">Stand der Ministeriumsangabe: 6. Oktober 2026. Eine spätere Freigabe ist damit nicht vorweggenommen.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">03 / So arbeitet die Technik</div><h2>Sehen. Einordnen. Handeln.</h2><p>Ein Assistenzsystem verbindet viele kleine Entscheidungen zu einem laufenden Bild der Straße.</p></div>
+        <div class="grid two">
+          <article class="card"><img class="photo" src="https://images.unsplash.com/photo-1772171386187-bc14e6cd7804?auto=format&fit=crop&w=1400&q=85" alt="Innenraum eines Tesla mit Anzeige für Fahrassistenz"><div class="card-pad"><span class="tag">Wahrnehmen</span><h3>Die Umgebung erfassen</h3><p>Kameras und weitere Sensoren liefern Informationen über Fahrbahnmarkierungen, Fahrzeuge, Fußgänger und Hindernisse. Die Software muss daraus in Echtzeit eine Situation ableiten.</p></div><div class="caption">Bild: <a href="https://unsplash.com/photos/car-dashboard-displaying-autonomous-driving-interface-dkEShdYwnZ0" target="_blank" rel="noreferrer">Josh Sorenson / Unsplash</a></div></article>
+          <article class="card"><div class="card-pad"><span class="tag">Entscheiden und überwachen</span><h3>Die Kontrolle bleibt wichtig</h3><p>Das System plant Lenkung, Tempo und Bremsen. Baustellen, schlechte Sicht oder ungewöhnliche Situationen können seine Grenzen zeigen. Deshalb muss der Mensch die Straße beobachten und eingreifen können.</p><div class="note"><strong>Merksatz:</strong> Assistenz entlastet. Sie nimmt dem Fahrer nicht automatisch die Verantwortung ab.</div></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section style="background:#0a1624">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">04 / Der Blick nach vorn</div><h2>Was entscheidet über die Zukunft?</h2><p>Technischer Fortschritt ist nur ein Teil der Antwort. Damit automatisiertes Fahren im Alltag funktioniert, müssen mehrere Dinge zusammenpassen.</p></div>
+        <div class="grid three">
+          <article class="card step"><h3>Sicherheit</h3><p>Systeme müssen auch mit seltenen und überraschenden Situationen umgehen können.</p></article>
+          <article class="card step"><h3>Regeln</h3><p>Behörden legen fest, welche Funktionen in welchem Land tatsächlich genutzt werden dürfen.</p></article>
+          <article class="card step"><h3>Vertrauen</h3><p>Fahrer müssen verstehen, was das Auto kann, wo seine Grenzen liegen und wann sie eingreifen müssen.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="quellen">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">Quellen & Aktualität</div><h2>Zum Weiterlesen</h2><p>Der Markt- und Zulassungsstand kann sich ändern. Geprüft am 25. November 2026.</p></div>
+        <div class="sources">
+          <div class="source"><a href="https://www.tesla.com/support/fsd" target="_blank" rel="noreferrer">Tesla USA: Full Self-Driving (Supervised)</a> — Funktionen, Aufsichtspflicht und Abo-Informationen.</div>
+          <div class="source"><a href="https://www.tesla.com/de_de/support/tesla-assisted-driving/subscriptions" target="_blank" rel="noreferrer">Tesla Deutschland: Tesla Assisted Driving Basic</a> — Länder-Verfügbarkeit und Unterschied zur überwachten Vollversion.</div>
+          <div class="source"><a href="https://www.bmv.de/SharedDocs/DE/Artikel/StV/Digitalisierung-der-Mobilitaet/aktueller-stand-tesla-assistenzsysteme.html" target="_blank" rel="noreferrer">Bundesverkehrsministerium: Genehmigungsstand</a> — Stand vom 6. Oktober 2026.</div>
+          <div class="source"><a href="https://www.nhtsa.gov/vehicle-safety/automated-vehicle-safety" target="_blank" rel="noreferrer">NHTSA: Automated Vehicle Safety</a> — Überblick zu Automatisierungsstufen und Fahrerrolle.</div>
+          <div class="source"><a href="https://unsplash.com/photos/self-driving-car-with-sensors-on-city-street-rT3fpi94lnw" target="_blank" rel="noreferrer">Leo_Visions / Unsplash</a> und <a href="https://unsplash.com/photos/car-dashboard-displaying-autonomous-driving-interface-dkEShdYwnZ0" target="_blank" rel="noreferrer">Josh Sorenson / Unsplash</a> — verwendete Fotos.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer><div class="wrap foot"><span>Auto & Zukunft · Ein Überblick, keine Kauf- oder Rechtsberatung</span><span>Zuletzt geprüft: 25. November 2026</span></div></footer>
+</body>
+</html>
