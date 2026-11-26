@@ -19,9 +19,9 @@ Nach der Veröffentlichung zeigt GitHub die Website-URL in den Pages-Einstellung
 - Der Tesla-Status und die Quellen sind in `index.html` datiert und sollten bei Änderungen erneut geprüft werden.
 - Die Fotos werden von Unsplash geladen; für die Anzeige ist eine Internetverbindung nötig.
 
-## Private Datenerfassung mit Supabase
+## Holzbestand – eigenständige Eingabeseite (Supabase)
 
-Die Datei [app.html](app.html) enthält eine Anmeldemaske und eine Buchungsverwaltung. Die Website nutzt das Supabase-Projekt für Anmeldung und Datenzugriff.
+[app.html](app.html) ist eine eigenständige Anwendung ohne Verbindung zur Auto-&-Zukunft-Website: „Holzbestand", ein privates Bestandsbuch für Holz, Holzwerkstoffe und Baumaterial. Sie enthält eine Anmeldemaske, die Erfassung von Material (mit Kategorievorschlägen wie KVH, BSH oder Brettsperrholz) und eine Bestandsliste mit Positionsanzahl und Gesamtwert. Anmeldung und Daten laufen über das Supabase-Projekt.
 
 ### Supabase-Einrichtung
 

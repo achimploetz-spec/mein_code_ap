@@ -13,6 +13,8 @@
   const listStatus = document.getElementById("list-status");
   const entryList = document.getElementById("entry-list");
   const dateInput = document.getElementById("entry-date");
+  const sumCount = document.getElementById("sum-count");
+  const sumValue = document.getElementById("sum-value");
 
   dateInput.value = new Date().toISOString().slice(0, 10);
 
@@ -71,14 +73,18 @@
 
   function renderEntries(rows) {
     entryList.replaceChildren();
+    sumCount.textContent = rows.length.toLocaleString("de-DE");
+    sumValue.textContent = formatMoney(rows.reduce((total, row) => total + Number(row.gesamtbetrag || 0), 0));
     if (!rows.length) {
-      addText(entryList, "div", "empty", "Noch keine Buchungen im Bestand.");
+      addText(entryList, "div", "empty", "Noch kein Material im Bestand.");
       return;
     }
 
     for (const row of rows) {
       const card = document.createElement("article");
       card.className = "entry";
+      const body = document.createElement("div");
+      body.className = "entry-body";
       const head = document.createElement("div");
       head.className = "entry-head";
       const copy = document.createElement("div");
@@ -93,13 +99,14 @@
       remove.type = "button";
       remove.className = "danger";
       remove.textContent = "Löschen";
-      remove.setAttribute("aria-label", "Buchung löschen: " + row.bezeichnung);
+      remove.setAttribute("aria-label", "Position löschen: " + row.bezeichnung);
       remove.addEventListener("click", () => deleteEntry(row.id, remove));
       head.append(remove);
-      card.append(head);
+      body.append(head);
 
       const amount = Number(row.menge).toLocaleString("de-DE", { maximumFractionDigits: 3 });
-      addText(card, "p", "", `${amount} × ${formatMoney(row.einzelpreis, row.waehrung)} = ${formatMoney(row.gesamtbetrag, row.waehrung)}`);
+      addText(body, "p", "", `${amount} × ${formatMoney(row.einzelpreis, row.waehrung)} = ${formatMoney(row.gesamtbetrag, row.waehrung)}`);
+      card.append(body);
       entryList.append(card);
     }
   }
@@ -121,15 +128,15 @@
   }
 
   async function deleteEntry(id, button) {
-    if (!window.confirm("Diese Buchung wirklich löschen?")) return;
+    if (!window.confirm("Diese Position wirklich aus dem Bestand löschen?")) return;
     button.disabled = true;
     const { error } = await bestand().delete().eq("id", id);
     if (error) {
-      setStatus(listStatus, "Buchung konnte nicht gelöscht werden: " + error.message, true);
+      setStatus(listStatus, "Position konnte nicht gelöscht werden: " + error.message, true);
       button.disabled = false;
       return;
     }
-    setStatus(listStatus, "Buchung gelöscht.");
+    setStatus(listStatus, "Position gelöscht.");
     await loadEntries();
   }
 
@@ -155,7 +162,7 @@
   entryForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     setStatus(saveStatus, "");
-    setBusy(saveButton, true, "Speichert …", "Buchung speichern");
+    setBusy(saveButton, true, "Wird gebucht …", "In Bestand buchen");
     const form = new FormData(entryForm);
     const { error } = await bestand().insert({
       bezeichnung: String(form.get("title")).trim(),
@@ -165,7 +172,7 @@
       einzelpreis: Number(form.get("unit_price")),
       waehrung: "EUR"
     });
-    setBusy(saveButton, false, "", "Buchung speichern");
+    setBusy(saveButton, false, "", "In Bestand buchen");
     if (error) {
       setStatus(saveStatus, "Speichern fehlgeschlagen: " + error.message, true);
       return;
@@ -173,9 +180,9 @@
 
     entryForm.reset();
     dateInput.value = new Date().toISOString().slice(0, 10);
-    document.getElementById("category").value = "Allgemein";
+    document.getElementById("category").value = "Schnittholz";
     document.getElementById("quantity").value = "1";
-    setStatus(saveStatus, "Buchung gespeichert.");
+    setStatus(saveStatus, "Position gebucht.");
     await loadEntries();
   });
 
@@ -186,6 +193,8 @@
     } else {
       showSignedOut();
       entryList.replaceChildren();
+      sumCount.textContent = "–";
+      sumValue.textContent = "–";
     }
   });
 
