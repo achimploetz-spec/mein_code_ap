@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weihnachtsmärkte um München</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: warm, festlich, praktisch – ein Ausflugsplaner für die Adventswochenenden
+   IDEA: ein Christkindlmarkt-Fahrplan: Wochenenden als beleuchtete Buden, Märkte als Ansichtskarten
+   PICTURE: Winternacht mit Schloss, Zirkuszelt, Tannen und Marktbuden unter Lichterketten; je Markt eine eigene Szene
+   COLOUR and TYPE: Tannengrün-Nacht, Schneeweiß, Glühweinrot, Lichtergold; Grenze Gotisch + Figtree
+   LAYOUT: Hero mit Szene, Wochenend-Fahrplan, schematische Karte, filterbare Marktkarten */
+:root{color-scheme:dark;--bg:#0f2b25;--bg2:#143a31;--ink:#f6f1e6;--mute:#b9c9bf;--snow:#fbf8f2;--card-ink:#1d2622;--red:#c9302c;--red2:#9e1f22;--gold:#f0b84a;--line:rgba(246,241,230,.16)}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Grenze Gotisch",Georgia,serif;font-weight:700;line-height:1.05;text-wrap:balance;margin:0}
+a{color:inherit}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+nav.top{position:sticky;top:0;z-index:20;background:rgba(15,43,37,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;gap:18px;align-items:center;padding:10px max(5vw,16px);flex-wrap:wrap}
+nav.top b{font-family:"Grenze Gotisch",serif;font-size:22px;margin-right:auto;color:var(--gold)}
+nav.top a{text-decoration:none;font-weight:600;font-size:15px;padding:8px 4px;opacity:.85}
+nav.top a:hover{opacity:1;color:var(--gold)}
+.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(20px,4vw,56px);align-items:center}
+.hero h1{font-size:clamp(40px,6vw,68px);color:var(--snow)}
+.hero h1 span{display:block;font-size:.55em;color:var(--gold);margin-top:10px}
+.hero p{font-size:17px;color:var(--mute);max-width:52ch}
+.stats{display:flex;gap:28px;flex-wrap:wrap;margin-top:22px}
+.stats div{font-size:14px;color:var(--mute)}
+.stats strong{display:block;font-family:"Grenze Gotisch",serif;font-size:40px;color:var(--snow);line-height:1}
+.heroart{border-radius:22px;overflow:hidden;box-shadow:0 30px 60px -20px rgba(0,0,0,.6);aspect-ratio:16/10;background:#0b1f2c}
+.heroart svg{display:block;width:100%;height:100%}
+h2{font-size:clamp(32px,4vw,48px);color:var(--snow)}
+.lead{color:var(--mute);max-width:65ch;margin:10px 0 26px}
+/* Fahrplan */
+.plan{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px}
+.wk{scroll-snap-align:start;background:var(--bg2);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;overflow:hidden}
+.wk.now{border-color:var(--gold);box-shadow:0 0 0 2px rgba(240,184,74,.35)}
+.wk.past{opacity:.55}
+.wk header{padding:16px 16px 12px;background:linear-gradient(180deg,var(--red),var(--red2));position:relative}
+.wk header::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:8px;background:radial-gradient(circle at 8px 0,var(--red2) 7px,transparent 8px) 0 0/16px 8px repeat-x}
+.wk .adv{font-size:13px;font-weight:700;color:#ffd9a0}
+.wk h3{font-size:30px;color:#fff;margin-top:2px}
+.wk .badge{position:absolute;top:14px;right:14px;background:var(--gold);color:#3a2300;font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px}
+.wk .note{font-size:13px;color:#ffe9c9;margin-top:6px}
+.daysh{display:grid;grid-template-columns:minmax(0,1fr) 22px 22px 22px;gap:4px;padding:18px 14px 6px;font-size:12px;color:var(--mute);font-weight:700}
+.daysh span{text-align:center}
+.wk ul{list-style:none;margin:0;padding:0 8px 12px}
+.wk li button{all:unset;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) 22px 22px 22px;gap:4px;align-items:center;width:100%;box-sizing:border-box;padding:8px 6px;border-radius:10px;min-height:44px}
+.wk li button:hover,.wk li button:focus-visible{background:rgba(255,255,255,.07);outline:none}
+.wk li button:focus-visible{box-shadow:0 0 0 2px var(--gold)}
+.mk{font-size:14.5px;line-height:1.25;overflow-wrap:anywhere;hyphens:auto;padding-right:4px}
+.mk small{display:block;color:var(--mute);font-size:12.5px}
+.mk .star{color:var(--gold)}
+.dot{width:14px;height:14px;border-radius:50%;justify-self:center;border:1.5px solid rgba(246,241,230,.25)}
+.dot.on{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(240,184,74,.7)}
+.wk .empty{padding:18px 16px;color:var(--mute);font-size:14px}
+.wk .always{margin:auto 8px 10px;padding:10px;border-top:1px dashed var(--line);font-size:13px;color:var(--mute)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin-top:14px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--gold);vertical-align:-1px;margin-right:6px}
+/* Karte */
+.mapgrid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:28px;align-items:center}
+.fig{position:relative;aspect-ratio:1/1;max-width:620px;width:100%;margin:0 auto}
+.fig svg{position:absolute;inset:0;width:100%;height:100%}
+.fig svg circle.pin{cursor:pointer}
+#mapinfo{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px;min-height:160px}
+#mapinfo h3{font-size:28px;color:var(--snow)}
+#mapinfo p{margin:.4em 0 0;color:var(--mute)}
+.wkchips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.wkchips span{font-size:12.5px;padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.08)}
+/* Märkte */
+.markets{background:var(--snow);color:var(--card-ink)}
+.markets h2{color:var(--red2)}
+.markets .lead{color:#4d5a53}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.chip{font:600 15px Figtree,sans-serif;border:1.5px solid #cdd5cf;background:#fff;color:var(--card-ink);border-radius:99px;padding:0 16px;min-height:44px;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
+.chip:focus-visible,.tools input:focus-visible,.tools select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.tools input,.tools select{font:16px Figtree,sans-serif;min-height:44px;border:1.5px solid #cdd5cf;border-radius:12px;padding:0 14px;background:#fff;color:var(--card-ink)}
+.tools input{flex:1 1 220px}
+.count{font-size:14px;color:#5a675f;margin-bottom:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:22px}
+.card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 1px 0 #e3e0d6,0 14px 30px -18px rgba(20,40,30,.35);display:flex;flex-direction:column;transition:box-shadow .3s}
+.card.hl{box-shadow:0 0 0 4px var(--gold),0 14px 30px -18px rgba(20,40,30,.35)}
+.card .pic{aspect-ratio:16/9;background:#0b1f2c;position:relative}
+.card .pic svg{display:block;width:100%;height:100%}
+.card .fav{position:absolute;top:10px;left:10px;background:var(--gold);color:#3a2300;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px}
+.card .km{position:absolute;top:10px;right:10px;background:rgba(10,25,20,.75);color:#fff;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.card .body{padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card h3{font-size:28px;color:var(--red2)}
+.card .ort{font-size:14px;color:#5a675f;margin-top:-4px}
+.card p{margin:0;font-size:15.5px}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin:4px 0 0}
+.meta dt{color:#6b776f;font-weight:600}
+.meta dd{margin:0}
+.when{display:flex;gap:6px;flex-wrap:wrap}
+.when span{font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:99px;background:#f2eee4;color:#5b4a2a;white-space:nowrap}
+.when span.f{background:#fde7b4;color:#6b4300}
+.tip{font-size:14px;background:#fbf3e1;border-radius:10px;padding:8px 12px;color:#5b4a2a}
+.links{display:flex;gap:14px;flex-wrap:wrap;margin-top:auto;padding-top:8px;border-top:1px solid #eee8db;font-size:14px;font-weight:600}
+.links a{color:var(--red2);text-decoration:none;padding:8px 0}
+.links a:hover{text-decoration:underline}
+.none{padding:30px;text-align:center;color:#5a675f;grid-column:1/-1}
+footer{font-size:13.5px;color:var(--mute)}
+footer p{max-width:80ch}
+.snow circle{animation:fall linear infinite}
+@keyframes fall{from{transform:translateY(-20px)}to{transform:translateY(200px)}}
+@media (prefers-reduced-motion:reduce){.snow circle{animation:none}html{scroll-behavior:auto}}
+@media(max-width:1100px){.plan{grid-template-columns:repeat(5,minmax(260px,82%))}}
+@media(max-width:860px){.hero,.mapgrid{grid-template-columns:minmax(0,1fr)}nav.top a{font-size:14px}}
+@media(max-width:600px){nav.top b{width:100%}.stats strong{font-size:32px}}
+</style>
+</head>
+<body>
+<nav class="top"><div class="wrap"><b>Advent um München</b><a href="#fahrplan">Wochenenden</a><a href="#karte">Karte</a><a href="#maerkte">Alle Märkte</a></div></nav>
+
+<header class="band"><div class="wrap hero">
+  <div>
+    <h1>Weihnachtsmärkte rund um München <span>Advent 2026, Wochenende für Wochenende</span></h1>
+    <p>Dein Ausflugsplaner für die Adventszeit: Welche Märkte an welchem Wochenende offen haben, wo sie liegen und was sie besonders macht, vom Märchenschloss bis zum Biergarten am See.</p>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="heroart" id="heroart" role="img" aria-label="Illustration: Weihnachtsmarkt in einer Winternacht mit Schloss, Zirkuszelt und Tannen"></div>
+</div></header>
+
+<section class="band" id="fahrplan"><div class="wrap">
+  <h2>Der Wochenend-Fahrplan</h2>
+  <p class="lead">Die Märkte nach Wochenenden sortiert, so wie du sie geplant hast. Die Lichter zeigen, an welchen Tagen ein Markt offen hat. Sterne sind deine Favoriten. Tippe auf einen Markt, um zu seiner Karte zu springen.</p>
+  <div class="plan" id="plan"></div>
+  <div class="legend"><span><i></i>geöffnet</span><span><span style="color:var(--gold)">★</span> dein Favorit fürs Wochenende</span><span>ÖPNV-Zeiten aus deinen Notizen</span></div>
+</div></section>
+
+<section class="band" id="karte" style="background:var(--bg2)"><div class="wrap mapgrid">
+  <div class="fig"><svg id="map" role="img" aria-label="Schematische Karte: Märkte nach Richtung und Entfernung von München"></svg></div>
+  <div>
+    <h2>Wo liegt was?</h2>
+    <p class="lead">Eine schematische Karte: München in der Mitte, die Ringe zeigen 20, 40, 60 und 80 km. Die Lage ist ungefähr. Tippe auf einen Punkt.</p>
+    <div id="mapinfo"><h3>München</h3><p>Wähle einen Markt auf der Karte.</p></div>
+  </div>
+</div></section>
+
+<section class="band markets" id="maerkte"><div class="wrap">
+  <h2>Alle Märkte im Überblick</h2>
+  <p class="lead">Infos zu allen Märkten aus deiner Liste. Die Illustrationen zeigen die Art des Ortes, echte Fotos findest du über „Fotos ansehen“ auf jeder Karte.</p>
+  <div class="tools" role="group" aria-label="Filter">
+    <div id="wkfilter" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    <button class="chip" id="favbtn" aria-pressed="false">★ Nur Favoriten</button>
+    <input id="q" type="search" placeholder="Suchen: Ort, Schloss, See …" aria-label="Märkte durchsuchen">
+    <select id="sort" aria-label="Sortierung"><option value="km">Nach Entfernung</option><option value="name">Nach Name</option></select>
+  </div>
+  <div class="count" id="count"></div>
+  <div class="cards" id="cards"></div>
+</div></section>
+
+<footer class="band"><div class="wrap">
+  <p>Alle Angaben ohne Gewähr, Stand 27.11.2026. Grundlage sind deine Liste und Recherchen bei in-muenchen.de, muenchen.de, MVV, ADAC und Veranstalterseiten. Öffnungszeiten kleinerer Vereinsmärkte bitte vor dem Besuch auf der jeweiligen Gemeindeseite prüfen. Entfernungen sind ungefähre Werte ab München.</p>
+</div></footer>
+
+<script>
+{
+const WK=[
+ {id:1,adv:'1. Advent',d:'27.–29. Nov',days:['Fr 27.','Sa 28.','So 29.'],start:'2026-11-27',end:'2026-11-29',note:''},
+ {id:2,adv:'2. Advent · Nikolaus',d:'4.–6. Dez',days:['Fr 4.','Sa 5.','So 6.'],start:'2026-12-04',end:'2026-12-06',note:'Notiz: Zwerge'},
+ {id:3,adv:'3. Advent',d:'11.–13. Dez',days:['Fr 11.','Sa 12.','So 13.'],start:'2026-12-11',end:'2026-12-13',note:'Sa 12.12.: Krampuslauf in Bad Tölz'},
+ {id:4,adv:'4. Advent',d:'18.–20. Dez',days:['Fr 18.','Sa 19.','So 20.'],start:'2026-12-18',end:'2026-12-20',note:'Noch nichts geplant – offen sind z. B.:'},
+ {id:5,adv:'Weihnachten',d:'25.–27. Dez',days:['Fr 25.','Sa 26.','So 27.'],start:'2026-12-25',end:'2026-12-27',note:'Kaltenberger Zusatz-Wochenende'}
+];
+// w: Tage je Wochenende als Fr/Sa/So ("111"), fav: Wochenenden mit Stern, br/km: ungefähre Richtung (Grad) und Entfernung für die Karte
+const M=[
+ {id:'maerchenbazar',n:'Märchenbazar',o:'Olympiapark Süd, Spiridon-Louis-Ring 100, München',km:5,br:330,m:'tent',w:{1:'111',2:'111',3:'111',4:'111',5:'111'},always:true,
+  t:'26.11.–28.12.2026, täglich (24.12. geschlossen); Silvesterparty am 31.12.',z:'Mo–Mi 14–22 Uhr, Do–Fr 14–23 Uhr; Feiertage: 25./26.12. 12–21, 27.12. 12–23, 28.12. 11–21 Uhr',e:'Eintritt frei',
+  d:'Der alternative Weihnachtsmarkt auf dem Sommer-Tollwood-Gelände: nostalgische Zirkuszelte, Jahrmarktsbauten, Kunsthandwerk, überwiegend vegane Küche, Live-Musik, Feuershows und Puppentheater.',
+  tip:'In der Stadt, also auch spontan an jedem Wochenende machbar. Der Veranstalter empfiehlt die Anreise mit Bus, Bahn oder Rad.',oe:'',url:'https://www.maerchenbazar.de'},
+ {id:'kaltenberg',n:'Weihnachtsmarkt Schloss Kaltenberg',o:'Schloßstraße 10, 82269 Geltendorf',km:45,br:258,m:'castle',w:{1:'111',2:'111',3:'111',4:'111',5:'011'},fav:[1,3],
+  t:'Alle vier Adventswochenenden Fr–So, dazu 26. und 27.12.',z:'z. B. Fr 27.11. 16–21:30 Uhr; Zeitfenster-Tickets',e:'Online 9,90–16,90 € (1. und 2. Advent am günstigsten), Tageskasse +2,60 €; Parken frei',
+  d:'Märchenwelt nach den Gebrüdern Grimm rund um das Schloss: über 120 Markt- und Essensstände, drei Bühnen, Feuershows, Lichterinstallationen und eine Eislaufbahn. Märchenerzähler in der Jurte für Kinder.',
+  tip:'Tickets vorab online kaufen: Nur so ist der Einlass garantiert, die Tageskasse schließt bei voller Auslastung. Am 3. Advent mit den Zwergen geplant.',oe:'',url:'https://www.schloss-kaltenberg-weihnachtsmarkt.de'},
+ {id:'toelz',n:'Tölzer Christkindlmarkt',o:'Historische Marktstraße, 83646 Bad Tölz',km:55,br:175,m:'oldtown',w:{1:'111',2:'111',3:'111',4:'111'},always:true,fav:[1,3],
+  t:'27.11.–24.12.2026, täglich (Heiligabend bis 14 Uhr)',z:'täglich',e:'Eintritt frei',
+  d:'Rund 40 bis 50 Buden in der historischen Marktstraße: Krippen, Schnitzkunst, Tölzer Glühwein, Schmalzgebackenes, Blasmusik, Nikolaus und Kutschfahrten.',
+  tip:'Höhepunkt: der große Krampuslauf am Samstag, 12. Dezember.',oe:'',url:''},
+ {id:'wolfratshausen',n:'Christkindlmarkt Wolfratshausen',o:'Altstadt, Untermarkt/Obermarkt, Wolfratshausen',km:35,br:190,m:'oldtown',w:{1:'111'},
+  t:'27.–29.11.2026',z:'',e:'',d:'Gemütlicher Markt entlang der historischen Marktstraße. Die Stadtkapelle spielt zur Eröffnung am Freitag.',tip:'',oe:'',url:''},
+ {id:'lavilla',n:'LA VILLA Weihnachtsmarkt',o:'Hotel LA VILLA, Ferdinand-von-Miller-Str. 39–41, Niederpöcking',km:30,br:218,m:'lake',w:{1:'011'},fav:[1],
+  t:'Sa 28. und So 29.11.2026',z:'',e:'',d:'Im Park des ehemaligen Knorr-Schlössls direkt am Starnberger See: Kunsthandwerk, Geschenkideen, Glühwein und Spezialitäten aus der Hotelküche in stilvollem Ambiente. 2026 schon zum 30. Mal.',
+  tip:'Liegt in Niederpöcking (Gemeinde Pöcking), nicht in Tutzing.',oe:'',url:'https://www.lavilla.de/la-villa/events/weihnachtsmarkt'},
+ {id:'perger',n:'Perger Adventsmarkt',o:'Kelterei Perger am Ammersee',km:45,br:248,m:'farm',w:{1:'011'},fav:[1],
+  t:'Sa 28. und So 29.11.2026',z:'',e:'',d:'Auf dem Hof einer Kelterei: Bio-Glühwein, Kunsthandwerk, Märchenerzähler und Musikanten. Sehr individuelle Atmosphäre.',tip:'',oe:'',url:''},
+ {id:'gauting',n:'Christkindlmarkt Gauting',o:'Rathausgarten, Gauting',km:20,br:225,m:'village',w:{1:'111'},t:'27.–29.11.2026',z:'',e:'',d:'Weihnachtsmarkt im Rathausgarten mit regionalen Anbietern und gemütlicher Atmosphäre.',tip:'',oe:'',url:''},
+ {id:'puchheim',n:'Puchheimer Sternderlmarkt',o:'Puchheim',km:20,br:275,m:'village',w:{1:'011'},t:'Sa 28. und So 29.11.2026',z:'',e:'',d:'Kunsthandwerk, selbstgemachte Leckereien, Musikprogramm und Besuch vom Nikolaus.',tip:'',oe:'',url:''},
+ {id:'vaterstetten',n:'Christkindlmarkt Vaterstetten',o:'Vaterstetten',km:20,br:95,m:'village',w:{1:'111'},t:'27.–29.11.2026',z:'',e:'',d:'Kunsthandwerk, Selbstgemachtes, regionale Spezialitäten und Rahmenprogramm.',tip:'',oe:'',url:''},
+ {id:'neubiberg',n:'Neubiberger Weihnachtsdult',o:'Rathausplatz, Neubiberg',km:12,br:140,m:'brewery',w:{1:'111'},t:'27.–29.11.2026',z:'',e:'',d:'Auf dem Rathausplatz und in einem winterlich gestalteten Biergarten: Kunsthandwerk, Schmuck, Adventsdeko und Familienprogramm.',tip:'',oe:'',url:''},
+ {id:'unterhaching',n:'Weihnachtsmarkt Unterhaching',o:'Unterhaching',km:12,br:165,m:'village',w:{1:'111'},t:'27.–29.11.2026',z:'',e:'',d:'Einer der größeren Märkte im Landkreis München mit über 60 Ausstellern und internationalem Speisenangebot.',tip:'',oe:'',url:''},
+ {id:'dachau',n:'Dachauer Christkindlmarkt',o:'Altstadt vor dem Rathaus, Dachau',km:25,br:315,m:'oldtown',w:{1:'111'},t:'In deiner Liste am 27.–29.11.; der Markt läuft laut in-muenchen.de vom 20.11. bis 23.12.',z:'',e:'',
+  d:'Historische Altstadt, Kunsthandwerk und Musik. Dazu Bayerns größter Adventskalender am Rathaus.',tip:'Adventskalender-Verlosung täglich vom 1. bis 23.12. um 19 Uhr, Los 1,50 €; der Erlös geht an soziale Zwecke.',oe:'',url:''},
+ {id:'erding',n:'Christkindlmarkt Erding',o:'Schrannenplatz und Kleiner Platz, Erding',km:40,br:65,m:'oldtown',w:{1:'111'},t:'20.11.–22.12.2026',z:'täglich 11–21 Uhr',e:'',
+  d:'Traditioneller Markt auf Schrannenplatz und Kleinem Platz mit vielen Ständen, bayerischen Spezialitäten und Kulturprogramm. Nikolaus, Christkind und Puppentheater für Kinder.',tip:'',oe:'',url:''},
+ {id:'tutzing',n:'Tutzinger Adventsmarkt',o:'rund um das Rathaus, Tutzing',km:45,br:210,m:'lake',w:{1:'010'},t:'Sa 28.11.2026',z:'',e:'',d:'Kleiner Adventsmarkt rund um das Rathaus am Westufer des Starnberger Sees.',tip:'',oe:'',url:''},
+ {id:'neukeferloh',n:'Neukeferloher Adventsgeflüster',o:'Bürgerhaus, Neukeferloh (Grasbrunn)',km:20,br:110,m:'village',w:{1:'011'},t:'Sa 28. und So 29.11.2026',z:'',e:'',d:'Adventsmarkt im und vor dem Bürgerhaus mit Tombola, Kinderprogramm und Nikolaus.',tip:'',oe:'',url:''},
+ {id:'poecking',n:'Pöckinger Christkindlmarkt',o:'Pöcking',km:35,br:222,m:'village',w:{1:'010'},t:'Sa 28.11.2026',z:'',e:'',d:'Von Vereinen organisierter Markt mit Kunsthandwerk und regionalen Spezialitäten.',tip:'Lässt sich gut mit LA VILLA am selben Tag verbinden.',oe:'',url:''},
+ {id:'tuerkenfeld',n:'Türkenfelder Bergweihnacht',o:'Am Steingassenberg 5, 82299 Türkenfeld',km:40,br:268,m:'hill',w:{1:'011',2:'011',3:'011'},
+  t:'An drei Adventswochenenden, jeweils Sa und So',z:'Sa 28.11. 12:30–22 Uhr · Sa 12.12. 12:30–23:30 Uhr, So 13.12. 11:30–19:30 Uhr',e:'',
+  d:'Weihnachtsmarkt auf dem Steingassenberg oberhalb von Türkenfeld, an drei Adventswochenenden.',tip:'Von hier führt ein Rundweg zur Erzabtei St. Ottilien, ideal für einen Winterspaziergang vorher.',oe:'ÖPNV ca. 1:22 h',url:''},
+ {id:'affing',n:'Weihnachtsmarkt Affing',o:'Schlosshof, Affing (bei Augsburg)',km:70,br:305,m:'castle',w:{2:'011',3:'111'},
+  t:'5./6.12. und 11.–13.12.2026',z:'Sa 5.12. 14–20, So 6.12. 12–20 · Fr 11.12. 17–21, Sa 12.12. 14–20, So 13.12. 12–20 Uhr',e:'',
+  d:'Weihnachtsmarkt im Schlosshof von Affing, traditionell am 2. und 3. Advent. Der weiteste Ausflug auf deiner Liste.',tip:'',oe:'ÖPNV ca. 3:01 h',url:'https://www.weihnachtsmarkt-affing.de'},
+ {id:'hofhegnenberg',n:'Kipferlmarkt Schloss Hofhegnenberg',o:'Herzog-Wilhelm-Straße 22, 82297 Steindorf',km:50,br:282,m:'castle',w:{2:'011'},
+  t:'Sa 5. und So 6.12.2026',z:'jeweils 16–20 Uhr',e:'Eintritt frei',d:'Seit rund 20 Jahren findet der Weihnachtsmarkt im bezaubernden Schlosshof von Hofhegnenberg statt. Klein, familiär und für alle Altersgruppen.',tip:'Abendmarkt: Startet erst um 16 Uhr, also perfekt bei Dunkelheit.',oe:'ÖPNV ca. 2:43 h',url:''},
+ {id:'feilnbach',n:'Bad Feilnbacher Waldadvent',o:'im Naturpark, Bad Feilnbach',km:60,br:150,m:'forest',w:{3:'011'},
+  t:'Sa 12. und So 13.12.2026',z:'Sa 13–21 Uhr, So 11–20 Uhr',e:'',d:'Adventsmarkt im Wald im Naturpark am Fuß des Wendelsteins: Lichter zwischen den Bäumen, Feuerstellen und Hütten.',tip:'',oe:'ÖPNV ca. 1:50 h über Rosenheim',url:'https://www.bad-feilnbach.de'},
+ {id:'prien',n:'Priener Christkindlmarkt',o:'Marktplatz, Prien am Chiemsee',km:85,br:120,m:'lake',w:{3:'111'},t:'11.–13.12.2026',z:'',e:'',d:'Rund um den Marktplatz am Chiemsee mit Kunsthandwerk, Musik und regionalen Spezialitäten. Knapp außerhalb des 80-km-Radius.',tip:'',oe:'',url:''},
+ {id:'stockdorf',n:'Christkindlmarkt Stockdorf',o:'Stockdorf (Gauting)',km:20,br:235,m:'village',w:{3:'111'},t:'11.–13.12.2026',z:'',e:'',d:'Besonders schön für Familien: Christkindlwerkstatt, Lebkuchenhäuser, geschnitzte Zwerge, Tombola und Kinderprogramm.',tip:'',oe:'',url:''},
+ {id:'martinsried',n:'Christkindlmarkt Martinsried',o:'Martinsried (Planegg)',km:15,br:215,m:'village',w:{3:'011'},t:'Sa 12. und So 13.12.2026 (noch nicht abschließend bestätigt)',z:'',e:'',d:'Kleiner, gemütlicher Markt mit Musik, Nikolaus und regionalem Engagement.',tip:'Termin 2026 vorher noch einmal prüfen.',oe:'',url:''},
+ {id:'freising',n:'Caritativer Christkindlmarkt Freising',o:'Marienplatz, Freising',km:45,br:15,m:'oldtown',w:{3:'011'},fav:[3],t:'Sa 12. und So 13.12.2026',z:'',e:'',d:'Traditioneller Markt in der Altstadt unterm Domberg: Turmbläser, offenes Singen und Candlelight-Shopping am Samstag. Der Erlös ist für einen guten Zweck.',tip:'',oe:'',url:''},
+ {id:'aying',n:'Ayinger Christkindlmarkt',o:'Biergarten des Bräustüberls, Aying',km:35,br:145,m:'brewery',w:{3:'011'},fav:[3],t:'Sa 12. und So 13.12.2026',z:'',e:'',d:'Besonders gemütlich im Biergarten des Bräustüberls: neun Hütten mit handgemachten Produkten, regionalen Spezialitäten und Geschenkideen.',tip:'Danach bietet sich ein Essen im Bräustüberl an.',oe:'',url:''},
+ {id:'altomuenster',n:'Altbayerischer Christkindlmarkt Altomünster',o:'Altomünster',km:50,br:320,m:'village',w:{3:'001'},t:'So 13.12.2026',z:'',e:'',d:'Traditioneller Markt mit handgefertigten Waren, lebender Krippe, Adventssingen und Kindertheater.',tip:'Stand doppelt in deiner Liste, hier zusammengefasst.',oe:'',url:''},
+ {id:'unterschleissheim',n:'Christkindlmarkt Unterschleißheim',o:'Unterschleißheim',km:20,br:350,m:'village',w:{3:'111'},t:'11.–13.12.2026',z:'',e:'',d:'Kunsthandwerk, Karussell, Weihnachtswerkstatt, Musik und Nikolausbesuch.',tip:'',oe:'',url:''},
+ {id:'hollern',n:'Winterzauber am Hollerner See',o:'Hollerner See, Eching/Neufahrn',km:30,br:357,m:'lake',w:{3:'111'},fav:[3],t:'11.–13.12.2026',z:'',e:'',d:'Winterliche Atmosphäre am See: Eisstockbahnen, Fackelwanderungen, Stockbrot und kleine Verkaufsstände. Mal ein etwas anderer Winterausflug.',tip:'',oe:'',url:''}
+];
+const byId=Object.fromEntries(M.map(x=>[x.id,x]));
+const WCOL={1:'#f0b84a',2:'#ff8a7a',3:'#9fd6ff',4:'#c7b3ff',5:'#9be3b0'};
+
+/* ---------- Szenen ---------- */
+let uid=0;
+function rnd(s){let x=0;for(const c of s)x=(x*31+c.charCodeAt(0))%9973;return()=>{x=(x*9301+49297)%233280;return x/233280}}
+function stall(x,y,s,c){return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-14 -22 L0 -32 L14 -22Z" fill="${c}"/><path d="M-14 -22 L0 -32 L14 -22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><rect x="-12" y="-22" width="24" height="22" fill="#5b3b25"/><rect x="-12" y="-22" width="4" height="22" fill="#3f2818"/><rect x="-9" y="-17" width="18" height="8" fill="#ffcf6b"/><rect x="-12" y="-9" width="24" height="3" fill="#7a5134"/></g>`}
+function fir(x,y,s,lights){let g=`<g transform="translate(${x} ${y}) scale(${s})"><rect x="-2" y="-6" width="4" height="7" fill="#3b2a1c"/><path d="M0 -46 L13 -22 L7 -22 L17 -6 L-17 -6 L-7 -22 L-13 -22Z" fill="#1d5a43"/><path d="M0 -46 L-13 -22 L-7 -22 L-17 -6 L0 -6Z" fill="#164a37"/><path d="M0 -46 L5 -36 L-5 -36Z" fill="#fff" opacity=".85"/>`;if(lights)g+=`<circle cx="-6" cy="-14" r="1.6" fill="#ffd36b"/><circle cx="5" cy="-26" r="1.6" fill="#ffd36b"/><circle cx="8" cy="-11" r="1.6" fill="#ff7b6b"/><circle cx="-3" cy="-31" r="1.6" fill="#ffd36b"/>`;return g+'</g>'}
+function win(x,y,w,h){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1" fill="#ffcf6b"/>`}
+function motif(m,r){
+ if(m==='castle')return `<g><rect x="120" y="70" width="100" height="62" fill="#2c3d4f"/><rect x="120" y="70" width="100" height="5" fill="#4b6075"/><rect x="104" y="52" width="26" height="80" fill="#34475b"/><path d="M100 54 L117 22 L134 54Z" fill="#8e2a2a"/><rect x="208" y="44" width="28" height="88" fill="#2f4254"/><path d="M204 46 L222 10 L240 46Z" fill="#a33030"/><path d="M222 10 L240 46 L222 46Z" fill="#7d2222"/>${win(111,66,8,11)}${win(214,58,9,12)}${win(140,86,9,12)}${win(162,86,9,12)}${win(184,86,9,12)}<path d="M160 132 v-22 a10 10 0 0 1 20 0 v22Z" fill="#ffb84d"/><path d="M222 10 v-8 l10 4 l-10 4" fill="#f0b84a"/></g>`;
+ if(m==='tent')return `<g><path d="M90 132 L170 40 L250 132Z" fill="#c9302c"/>${[0,1,2,3].map(i=>`<path d="M170 40 L${104+i*40} 132 L${124+i*40} 132Z" fill="#fbf8f2"/>`).join('')}<path d="M170 40 L250 132 L210 132Z" fill="#000" opacity=".18"/><path d="M90 132 Q170 112 250 132" fill="none" stroke="#f0b84a" stroke-width="3"/><rect x="150" y="104" width="40" height="28" fill="#2a1a12"/><rect x="154" y="108" width="32" height="24" fill="#ffb84d"/><line x1="170" y1="40" x2="170" y2="18" stroke="#ddd" stroke-width="2"/><path d="M170 18 l16 5 l-16 5Z" fill="#2e7de0"/><path d="M60 132 L84 104 L108 132Z" fill="#2e7de0"/><path d="M84 104 L96 132 L108 132Z" fill="#000" opacity=".2"/></g>`;
+ if(m==='lake')return `<g><rect x="0" y="118" width="320" height="22" fill="#1c4b66"/><rect x="0" y="118" width="320" height="2" fill="#7fb6d6" opacity=".6"/><path d="M0 100 Q60 80 120 96 T240 92 T320 98 V118 H0Z" fill="#20323f"/><rect x="190" y="70" width="64" height="40" fill="#e8dcc6"/><path d="M184 72 L222 46 L260 72Z" fill="#6e3b2c"/><rect x="196" y="80" width="10" height="12" fill="#ffcf6b"/><rect x="216" y="80" width="10" height="12" fill="#ffcf6b"/><rect x="236" y="80" width="10" height="12" fill="#ffcf6b"/><rect x="196" y="122" width="10" height="5" fill="#ffcf6b" opacity=".45"/><rect x="216" y="124" width="10" height="4" fill="#ffcf6b" opacity=".35"/><rect x="236" y="122" width="10" height="5" fill="#ffcf6b" opacity=".45"/><path d="M60 118 l-14 -6 h28Z" fill="#fbf8f2"/></g>`;
+ if(m==='oldtown'){let g='<g>';const cols=['#c8553d','#e2b04a','#6f8f72','#d98a6a','#8c6fa6','#e7d7b5'];for(let i=0;i<6;i++){const x=40+i*42,h=56+Math.floor(r()*30),c=cols[(i+Math.floor(r()*6))%6];g+=`<rect x="${x}" y="${132-h}" width="40" height="${h}" fill="${c}"/><path d="M${x-2} ${134-h} L${x+20} ${108-h} L${x+42} ${134-h}Z" fill="#5a2e24"/><path d="M${x+20} ${108-h} L${x+42} ${134-h} L${x+20} ${134-h}Z" fill="#000" opacity=".2"/>${win(x+7,140-h,8,10)}${win(x+25,140-h,8,10)}${h>70?win(x+16,160-h,8,10):''}`}return g+'</g>'}
+ if(m==='forest'){let g='<g>';for(let i=0;i<9;i++)g+=fir(30+i*34+r()*10,132-r()*8,1.3+r()*.8,true);return g+'<path d="M20 70 Q160 40 300 70" fill="none" stroke="#ffd36b" stroke-width="1" stroke-dasharray="2 6"/></g>'}
+ if(m==='farm')return `<g><rect x="120" y="78" width="110" height="54" fill="#8a3b2c"/><path d="M110 80 L175 36 L240 80Z" fill="#4a2a20"/><path d="M110 80 L175 36 L240 80" fill="none" stroke="#fff" stroke-width="3"/><rect x="160" y="96" width="30" height="36" fill="#ffb84d"/><path d="M160 96 L190 132 M190 96 L160 132" stroke="#5b3b25" stroke-width="3"/>${win(132,92,12,10)}${win(206,92,12,10)}<ellipse cx="80" cy="126" rx="14" ry="8" fill="#6b4126"/><rect x="66" y="108" width="28" height="18" rx="6" fill="#7a4b2c"/><rect x="66" y="114" width="28" height="2" fill="#3b2a1c"/><rect x="66" y="120" width="28" height="2" fill="#3b2a1c"/><circle cx="268" cy="96" r="20" fill="#1d4a37"/><rect x="265" y="110" width="6" height="22" fill="#3b2a1c"/><circle cx="260" cy="90" r="2.5" fill="#d9413a"/><circle cx="274" cy="100" r="2.5" fill="#d9413a"/></g>`;
+ if(m==='village')return `<g><rect x="150" y="70" width="34" height="62" fill="#efe6d4"/><rect x="176" y="70" width="8" height="62" fill="#000" opacity=".12"/><circle cx="167" cy="58" r="13" fill="#2f6a54"/><path d="M154 60 h26 v10 h-26Z" fill="#2f6a54"/><path d="M167 32 v14" stroke="#f0b84a" stroke-width="2"/><circle cx="167" cy="30" r="3" fill="#f0b84a"/><circle cx="167" cy="84" r="5" fill="#ffcf6b"/><rect x="190" y="96" width="56" height="36" fill="#e2c9a0"/><path d="M186 98 L218 76 L250 98Z" fill="#7d3b2c"/>${win(198,106,10,10)}${win(228,106,10,10)}<rect x="88" y="100" width="54" height="32" fill="#d6b48c"/><path d="M84 102 L115 82 L146 102Z" fill="#6a3426"/>${win(96,110,10,10)}${win(124,110,10,10)}</g>`;
+ if(m==='brewery')return `<g><rect x="70" y="74" width="120" height="58" fill="#e9dcc2"/><path d="M62 76 L130 40 L198 76Z" fill="#7d3b2c"/><rect x="170" y="30" width="12" height="40" fill="#8a5a3a"/><circle cx="176" cy="22" r="7" fill="#fff" opacity=".35"/>${win(82,88,12,14)}${win(104,88,12,14)}${win(144,88,12,14)}${win(166,88,12,14)}<rect x="118" y="100" width="24" height="32" fill="#ffb84d"/><path d="M200 132 v-30 M260 132 v-30" stroke="#5b3b25" stroke-width="3"/><path d="M196 104 L230 86 L264 104" fill="none" stroke="#5b3b25" stroke-width="3"/><path d="M200 102 Q230 112 260 102" fill="none" stroke="#ffd36b" stroke-width="1.5" stroke-dasharray="1 5" stroke-linecap="round"/><rect x="212" y="118" width="36" height="4" fill="#7a5134"/><path d="M216 122 v10 M244 122 v10" stroke="#7a5134" stroke-width="3"/></g>`;
+ if(m==='hill')return `<g><path d="M0 132 Q110 40 200 70 T320 100 V140 H0Z" fill="#26453b"/><path d="M0 132 Q110 40 200 70" fill="none" stroke="#fbf8f2" stroke-width="4" opacity=".8"/><rect x="104" y="56" width="22" height="22" fill="#efe6d4"/><path d="M100 58 L115 44 L130 58Z" fill="#6a3426"/><rect x="111" y="34" width="8" height="12" fill="#efe6d4"/><path d="M109 36 L115 26 L121 36Z" fill="#6a3426"/>${win(111,64,8,8)}</g>`;
+ return '';
+}
+function scene(m,seed,big){
+ const id='s'+(uid++),r=rnd(seed),hues={castle:'#132a44',tent:'#1b2140',lake:'#0f2c40',oldtown:'#1a2238',forest:'#0f2a2a',farm:'#1c2634',village:'#162a3c',brewery:'#1c2236',hill:'#122a3a',hero:'#0d1f33'};
+ let stars='';for(let i=0;i<26;i++)stars+=`<circle cx="${(r()*320).toFixed(1)}" cy="${(r()*70).toFixed(1)}" r="${(r()*1.1+.3).toFixed(2)}" fill="#fff" opacity="${(r()*.6+.3).toFixed(2)}"/>`;
+ let flakes='';for(let i=0;i<(big?40:18);i++){const d=(r()*6+5).toFixed(1);flakes+=`<circle cx="${(r()*320).toFixed(1)}" cy="${(r()*-40).toFixed(1)}" r="${(r()*1.4+.6).toFixed(1)}" fill="#fff" opacity=".85" style="animation-duration:${d}s;animation-delay:-${(r()*d).toFixed(1)}s"/>`}
+ let body=big?motif('hill',r).replace('<g>','<g transform="translate(-40 0)">')+`<g transform="translate(90 -6) scale(.62)">${motif('castle',r)}</g><g transform="translate(150 30) scale(.6)">${motif('tent',r)}</g>`+fir(28,132,1.6,true)+fir(300,132,1.8,true)+fir(276,134,1.2,true):motif(m,r);
+ const stalls=stall(52,150,1,'#c9302c')+stall(96,152,1.05,'#1d5a43')+stall(250,151,1,'#c9302c')+(big?stall(150,154,1.1,'#2e7de0')+stall(200,153,1,'#1d5a43'):'');
+ let bulbs='';for(let i=0;i<=16;i++){const x=i*20,y=104+Math.sin(i/16*Math.PI)*16;bulbs+=`<circle cx="${x}" cy="${y.toFixed(1)}" r="1.9" fill="${['#ffd36b','#ff7b6b','#9fd6ff'][i%3]}"/>`}
+ return `<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${hues[m]||'#132a44'}"/><stop offset="1" stop-color="#2b4a5c"/></linearGradient><radialGradient id="${id}m"><stop offset="0" stop-color="#fff6d8"/><stop offset=".5" stop-color="#fff6d8" stop-opacity=".25"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/></radialGradient></defs><rect width="320" height="180" fill="url(#${id}g)"/>${stars}<circle cx="${big?268:280}" cy="30" r="26" fill="url(#${id}m)"/><circle cx="${big?268:280}" cy="30" r="9" fill="#fff6d8"/>${body}<path d="M0 132 Q80 124 160 132 T320 130 V180 H0Z" fill="#eef3f6"/><path d="M0 132 Q80 124 160 132 T320 130" fill="none" stroke="#fff" stroke-width="2"/><path d="M0 160 Q120 150 320 166 V180 H0Z" fill="#d6e2ea"/>${stalls}<path d="M0 104 Q160 136 320 104" fill="none" stroke="#3b2a1c" stroke-width=".8"/>${bulbs}<g class="snow">${flakes}</g></svg>`;
+}
+
+/* ---------- Status der Wochenenden ---------- */
+const today=new Date();today.setHours(0,0,0,0);
+const st=w=>{const s=new Date(w.start),e=new Date(w.end);s.setHours(0,0,0,0);e.setHours(23,59,0,0);return today>e?'past':(today>=new Date(s.getTime()-4*864e5)?'now':'')};
+
+/* ---------- Hero ---------- */
+document.getElementById('heroart').innerHTML=scene('hero','muenchen',true);
+const favCount=M.filter(x=>x.fav).length;
+document.getElementById('stats').innerHTML=`<div><strong>${M.length}</strong>Märkte</div><div><strong>${WK.length}</strong>Wochenenden</div><div><strong>${favCount}</strong>Favoriten</div>`;
+
+/* ---------- Fahrplan ---------- */
+const plan=document.getElementById('plan');
+plan.innerHTML=WK.map(w=>{
+ const s=st(w);
+ let list=M.filter(m=>m.w[w.id]&&!m.always);
+ list.sort((a,b)=>((b.fav||[]).includes(w.id)-(a.fav||[]).includes(w.id))||a.km-b.km);
+ const alw=M.filter(m=>m.always&&m.w[w.id]);
+ const row=m=>{const f=(m.fav||[]).includes(w.id);return `<li><button data-go="${m.id}" aria-label="${m.n}, zur Karte springen"><span class="mk">${f?'<span class="star">★</span> ':''}${m.n}<small>ca. ${m.km} km${m.oe?' · '+m.oe.replace('ÖPNV ca.','ÖPNV'):''}</small></span>${[...m.w[w.id]].map(c=>`<span class="dot ${c==='1'?'on':''}"></span>`).join('')}</button></li>`};
+ return `<article class="wk ${s}"><header><div class="adv">${w.adv}</div><h3>${w.d}</h3>${s==='now'?'<span class="badge">Jetzt</span>':''}${w.note?`<div class="note">${w.note}</div>`:''}</header>
+ <div class="daysh"><span></span>${w.days.map(d=>`<span>${d.slice(0,2)}</span>`).join('')}</div>
+ ${list.length?`<ul>${list.map(row).join('')}</ul>`:`<div class="empty">Noch keine Märkte eingeplant. Offen sind z. B. Schloss Kaltenberg (Fr–So) und die durchgehenden Märkte unten.</div>`}
+ ${alw.length?`<div class="always"><b>Durchgehend offen:</b><ul style="padding:0;margin:4px 0 0">${alw.map(row).join('')}</ul></div>`:''}</article>`}).join('');
+
+/* ---------- Karte ---------- */
+const map=document.getElementById('map');
+const drawMap=()=>{
+ const W=map.clientWidth||500,H=map.clientHeight||500,cx=W/2,cy=H/2,R=Math.min(W,H)/2-18,k=R/88;
+ let g='';
+ [20,40,60,80].forEach(d=>{g+=`<circle cx="${cx}" cy="${cy}" r="${d*k}" fill="none" stroke="rgba(246,241,230,.18)" stroke-dasharray="3 5"/><text x="${cx+4}" y="${cy-d*k-4}" fill="#b9c9bf" font-size="12" stroke="#143a31" stroke-width="4" paint-order="stroke">${d} km</text>`});
+ [['N',0],['O',90],['S',180],['W',270]].forEach(([t,a])=>{const x=cx+Math.sin(a*Math.PI/180)*(R+6),y=cy-Math.cos(a*Math.PI/180)*(R+6);g+=`<text x="${x}" y="${y+5}" text-anchor="middle" fill="#f0b84a" font-size="14" font-weight="700">${t}</text>`});
+ g+=`<circle cx="${cx}" cy="${cy}" r="9" fill="#c9302c" stroke="#fff" stroke-width="2"/><text x="${cx}" y="${cy+26}" text-anchor="middle" fill="#fbf8f2" font-size="13" font-weight="700" stroke="#143a31" stroke-width="4" paint-order="stroke">München</text>`;
+ M.forEach(m=>{const a=m.br*Math.PI/180,x=cx+Math.sin(a)*m.km*k,y=cy-Math.cos(a)*m.km*k,first=+Object.keys(m.w)[0];
+  g+=`<circle class="pin" data-id="${m.id}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${m.fav?8:6}" fill="${m.always?'#fbf8f2':WCOL[first]}" stroke="#0f2b25" stroke-width="2" tabindex="0" role="button" aria-label="${m.n}"><title>${m.n}</title></circle>`});
+ map.innerHTML=g;
+};
+const roMap=new ResizeObserver(drawMap);roMap.observe(map);
+const showInfo=id=>{const m=byId[id];if(!m)return;document.getElementById('mapinfo').innerHTML=`<h3>${m.n}</h3><p>${m.o} · ca. ${m.km} km</p><p>${m.t}</p><div class="wkchips">${Object.keys(m.w).map(k=>`<span style="border:1px solid ${WCOL[k]}">${WK[k-1].d}</span>`).join('')}</div><p style="margin-top:12px"><a href="#card-${m.id}" data-go="${m.id}" style="color:#f0b84a;font-weight:600">Zur Marktkarte →</a></p>`};
+map.addEventListener('click',e=>{const p=e.target.closest('.pin');if(p)showInfo(p.dataset.id)});
+map.addEventListener('keydown',e=>{const p=e.target.closest('.pin');if(p&&(e.key==='Enter'||e.key===' ')){e.preventDefault();showInfo(p.dataset.id)}});
+const mapLeg=document.createElement('div');mapLeg.className='wkchips';mapLeg.innerHTML=WK.map(w=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${WCOL[w.id]};margin-right:6px"></span>ab ${w.d}</span>`).join('')+'<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fbf8f2;margin-right:6px"></span>durchgehend</span>';
+document.getElementById('mapinfo').after(mapLeg);
+
+/* ---------- Marktkarten ---------- */
+let fW=0,fFav=false,fQ='',fSort='km';
+const wf=document.getElementById('wkfilter');
+wf.innerHTML=`<button class="chip" data-w="0" aria-pressed="true">Alle</button>`+WK.map(w=>`<button class="chip" data-w="${w.id}" aria-pressed="false">${w.d}</button>`).join('');
+const gq=s=>encodeURIComponent(s);
+const card=m=>{
+ const isFav=(m.fav||[]).length>0;
+ const when=Object.keys(m.w).map(k=>`<span class="${(m.fav||[]).includes(+k)?'f':''}">${(m.fav||[]).includes(+k)?'★ ':''}${WK[k-1].d}</span>`).join('');
+ const plain=m.n;
+ return `<article class="card" id="card-${m.id}"><div class="pic">${scene(m.m,m.id)}${isFav?'<span class="fav">★ Favorit</span>':''}<span class="km">ca. ${m.km} km</span></div>
+ <div class="body"><h3>${m.n}</h3><div class="ort">${m.o}</div><p>${m.d}</p>
+ <dl class="meta"><dt>Termin</dt><dd>${m.t}</dd>${m.z?`<dt>Zeiten</dt><dd>${m.z}</dd>`:''}${m.e?`<dt>Eintritt</dt><dd>${m.e}</dd>`:''}${m.oe?`<dt>Anreise</dt><dd>${m.oe}</dd>`:''}</dl>
+ <div class="when">${when}</div>${m.tip?`<div class="tip">${m.tip}</div>`:''}
+ <div class="links"><a href="https://www.google.com/search?tbm=isch&q=${gq(plain+' '+m.o.split(',').pop())}" target="_blank" rel="noopener">Fotos ansehen</a><a href="https://www.google.com/maps/search/?api=1&query=${gq(plain+' '+m.o)}" target="_blank" rel="noopener">Route</a>${m.url?`<a href="${m.url}" target="_blank" rel="noopener">Website</a>`:`<a href="https://www.google.com/search?q=${gq(plain+' 2026')}" target="_blank" rel="noopener">Aktuelle Infos</a>`}</div></div></article>`};
+const cardsEl=document.getElementById('cards'),countEl=document.getElementById('count');
+const render=()=>{
+ let list=M.filter(m=>(!fW||m.w[fW])&&(!fFav||(m.fav||[]).length&&(!fW||(m.fav||[]).includes(fW))));
+ if(fQ){const q=fQ.toLowerCase();list=list.filter(m=>(m.n+' '+m.o+' '+m.d+' '+m.m.replace('castle','schloss').replace('lake','see')).toLowerCase().includes(q))}
+ list.sort(fSort==='km'?(a,b)=>a.km-b.km:(a,b)=>a.n.localeCompare(b.n,'de'));
+ countEl.textContent=`${list.length} von ${M.length} Märkten`;
+ uid=1000;cardsEl.innerHTML=list.length?list.map(card).join(''):'<div class="none">Kein Markt passt zu diesem Filter.</div>';
+};
+wf.addEventListener('click',e=>{const b=e.target.closest('[data-w]');if(!b)return;fW=+b.dataset.w;wf.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c===b));render()});
+const favbtn=document.getElementById('favbtn');
+favbtn.addEventListener('click',()=>{fFav=!fFav;favbtn.setAttribute('aria-pressed',fFav);render()});
+document.getElementById('q').addEventListener('input',e=>{fQ=e.target.value.trim();render()});
+document.getElementById('sort').addEventListener('change',e=>{fSort=e.target.value;render()});
+render();
+
+/* ---------- Sprung zur Karte ---------- */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;e.preventDefault();
+ const id=b.dataset.go;let el=document.getElementById('card-'+id);
+ if(!el){fW=0;fFav=false;fQ='';document.getElementById('q').value='';favbtn.setAttribute('aria-pressed','false');wf.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.w==='0'));render();el=document.getElementById('card-'+id)}
+ el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+ el.classList.add('hl');setTimeout(()=>el.classList.remove('hl'),2200)});
+}
+</script>
+</body>
+</html>
